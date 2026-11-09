@@ -1,0 +1,938 @@
+--==================================================
+-- SALEMS RESET
+-- Premium Black / Smooth Silver UI
+-- Intro + GUI Size Changer + Close + Lock
+--==================================================
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+--==================================================
+-- SETTINGS
+--==================================================
+
+local MIN_SCALE = 0.65
+local MAX_SCALE = 1.35
+local guiScaleValue = 1
+
+local guiLocked = false
+
+-- Put an audio asset you are allowed to use here.
+-- Example format:
+-- local INTRO_SOUND_ID = "rbxassetid://123456789"
+local INTRO_SOUND_ID = ""
+
+--==================================================
+-- REMOVE OLD GUI
+--==================================================
+
+local existing = playerGui:FindFirstChild("SalemsReset")
+
+if existing then
+	existing:Destroy()
+end
+
+--==================================================
+-- SCREEN GUI
+--==================================================
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SalemsReset"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = playerGui
+
+--==================================================
+-- INTRO
+--==================================================
+
+local intro = Instance.new("Frame")
+intro.Name = "Intro"
+intro.Size = UDim2.fromScale(1, 1)
+intro.Position = UDim2.fromScale(0, 0)
+intro.BackgroundColor3 = Color3.fromRGB(2, 2, 4)
+intro.BorderSizePixel = 0
+intro.ZIndex = 100
+intro.Parent = screenGui
+
+local introGradient = Instance.new("UIGradient")
+introGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(18, 18, 23)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(4, 4, 7)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 2))
+})
+introGradient.Rotation = 135
+introGradient.Parent = intro
+
+local introTitle = Instance.new("TextLabel")
+introTitle.Name = "IntroTitle"
+introTitle.Size = UDim2.new(1, -40, 0, 70)
+introTitle.Position = UDim2.new(0, 20, 0.5, -35)
+introTitle.BackgroundTransparency = 1
+introTitle.Text = "SALEMS RESET"
+introTitle.TextColor3 = Color3.fromRGB(245, 245, 255)
+introTitle.TextTransparency = 1
+introTitle.Font = Enum.Font.GothamBlack
+introTitle.TextSize = 42
+introTitle.TextXAlignment = Enum.TextXAlignment.Center
+introTitle.ZIndex = 101
+introTitle.Parent = intro
+
+local introLine = Instance.new("Frame")
+introLine.Name = "IntroLine"
+introLine.Size = UDim2.new(0, 0, 0, 2)
+introLine.Position = UDim2.new(0.5, 0, 0.5, 38)
+introLine.AnchorPoint = Vector2.new(0.5, 0)
+introLine.BackgroundColor3 = Color3.fromRGB(235, 235, 245)
+introLine.BorderSizePixel = 0
+introLine.ZIndex = 101
+introLine.Parent = intro
+
+local introLineCorner = Instance.new("UICorner")
+introLineCorner.CornerRadius = UDim.new(1, 0)
+introLineCorner.Parent = introLine
+
+--==================================================
+-- INTRO SOUND
+--==================================================
+
+if INTRO_SOUND_ID ~= "" then
+	local introSound = Instance.new("Sound")
+	introSound.Name = "IntroMusic"
+	introSound.SoundId = INTRO_SOUND_ID
+	introSound.Volume = 0.45
+	introSound.Looped = false
+	introSound.Parent = screenGui
+
+	introSound:Play()
+end
+
+--==================================================
+-- INTRO ANIMATION
+--==================================================
+
+task.spawn(function()
+
+	TweenService:Create(
+		introTitle,
+		TweenInfo.new(
+			0.8,
+			Enum.EasingStyle.Quint,
+			Enum.EasingDirection.Out
+		),
+		{
+			TextTransparency = 0
+		}
+	):Play()
+
+	TweenService:Create(
+		introLine,
+		TweenInfo.new(
+			0.7,
+			Enum.EasingStyle.Quint,
+			Enum.EasingDirection.Out
+		),
+		{
+			Size = UDim2.new(0, 260, 0, 2)
+		}
+	):Play()
+
+	task.wait(1.8)
+
+	TweenService:Create(
+		introTitle,
+		TweenInfo.new(0.5),
+		{
+			TextTransparency = 1
+		}
+	):Play()
+
+	TweenService:Create(
+		introLine,
+		TweenInfo.new(0.4),
+		{
+			Size = UDim2.new(0, 0, 0, 2)
+		}
+	):Play()
+
+	TweenService:Create(
+		intro,
+		TweenInfo.new(
+			0.6,
+			Enum.EasingStyle.Quad,
+			Enum.EasingDirection.In
+		),
+		{
+			BackgroundTransparency = 1
+		}
+	):Play()
+
+	task.wait(0.65)
+
+	if intro.Parent then
+		intro:Destroy()
+	end
+end)
+
+--==================================================
+-- MAIN FRAME
+--==================================================
+
+local frame = Instance.new("Frame")
+frame.Name = "Main"
+frame.Size = UDim2.fromOffset(350, 195)
+frame.Position = UDim2.new(0.5, -175, 0.5, -97)
+frame.BackgroundColor3 = Color3.fromRGB(5, 5, 7)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Parent = screenGui
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 18)
+frameCorner.Parent = frame
+
+local frameGradient = Instance.new("UIGradient")
+frameGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 29)),
+	ColorSequenceKeypoint.new(0.35, Color3.fromRGB(12, 12, 15)),
+	ColorSequenceKeypoint.new(0.7, Color3.fromRGB(7, 7, 9)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(2, 2, 3))
+})
+frameGradient.Rotation = 135
+frameGradient.Parent = frame
+
+--==================================================
+-- GLOW + BORDER
+--==================================================
+
+local outerGlow = Instance.new("UIStroke")
+outerGlow.Name = "OuterGlow"
+outerGlow.Color = Color3.fromRGB(225, 225, 235)
+outerGlow.Thickness = 7
+outerGlow.Transparency = 0.84
+outerGlow.Parent = frame
+
+local frameStroke = Instance.new("UIStroke")
+frameStroke.Name = "MainBorder"
+frameStroke.Color = Color3.fromRGB(170, 170, 185)
+frameStroke.Thickness = 1.7
+frameStroke.Transparency = 0.12
+frameStroke.Parent = frame
+
+local innerBorder = Instance.new("Frame")
+innerBorder.Name = "InnerBorder"
+innerBorder.Size = UDim2.new(1, -8, 1, -8)
+innerBorder.Position = UDim2.fromOffset(4, 4)
+innerBorder.BackgroundTransparency = 1
+innerBorder.BorderSizePixel = 0
+innerBorder.ZIndex = 2
+innerBorder.Parent = frame
+
+local innerCorner = Instance.new("UICorner")
+innerCorner.CornerRadius = UDim.new(0, 15)
+innerCorner.Parent = innerBorder
+
+local innerStroke = Instance.new("UIStroke")
+innerStroke.Color = Color3.fromRGB(70, 70, 78)
+innerStroke.Thickness = 1
+innerStroke.Transparency = 0.35
+innerStroke.Parent = innerBorder
+
+--==================================================
+-- TOP LIGHT
+--==================================================
+
+local topLight = Instance.new("Frame")
+topLight.Name = "TopLight"
+topLight.Size = UDim2.new(1, -40, 0, 2)
+topLight.Position = UDim2.fromOffset(20, 11)
+topLight.BackgroundColor3 = Color3.fromRGB(240, 240, 248)
+topLight.BorderSizePixel = 0
+topLight.ZIndex = 3
+topLight.Parent = frame
+
+local topLightCorner = Instance.new("UICorner")
+topLightCorner.CornerRadius = UDim.new(1, 0)
+topLightCorner.Parent = topLight
+
+--==================================================
+-- TITLE
+--==================================================
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, -110, 0, 34)
+title.Position = UDim2.fromOffset(20, 25)
+title.BackgroundTransparency = 1
+title.Text = "SALEMS RESET"
+title.TextColor3 = Color3.fromRGB(250, 250, 255)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 22
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.ZIndex = 3
+title.Parent = frame
+
+--==================================================
+-- CLOSE BUTTON
+--==================================================
+
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.fromOffset(28, 28)
+closeButton.Position = UDim2.new(1, -38, 0, 18)
+closeButton.BackgroundColor3 = Color3.fromRGB(190, 45, 45)
+closeButton.BorderSizePixel = 0
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 14
+closeButton.AutoButtonColor = false
+closeButton.ZIndex = 10
+closeButton.Parent = frame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeButton
+
+local closeStroke = Instance.new("UIStroke")
+closeStroke.Color = Color3.fromRGB(255, 95, 95)
+closeStroke.Thickness = 1
+closeStroke.Parent = closeButton
+
+--==================================================
+-- LOCK BUTTON
+--==================================================
+
+local lockButton = Instance.new("TextButton")
+lockButton.Name = "LockButton"
+lockButton.Size = UDim2.fromOffset(28, 28)
+lockButton.Position = UDim2.new(1, -72, 0, 18)
+lockButton.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+lockButton.BorderSizePixel = 0
+lockButton.Text = "🔓"
+lockButton.TextColor3 = Color3.fromRGB(235, 235, 240)
+lockButton.Font = Enum.Font.GothamBold
+lockButton.TextSize = 13
+lockButton.AutoButtonColor = false
+lockButton.ZIndex = 10
+lockButton.Parent = frame
+
+local lockCorner = Instance.new("UICorner")
+lockCorner.CornerRadius = UDim.new(0, 8)
+lockCorner.Parent = lockButton
+
+local lockStroke = Instance.new("UIStroke")
+lockStroke.Color = Color3.fromRGB(115, 115, 125)
+lockStroke.Thickness = 1
+lockStroke.Parent = lockButton
+
+--==================================================
+-- RESET BUTTON
+--==================================================
+
+local buttonContainer = Instance.new("Frame")
+buttonContainer.Name = "ButtonContainer"
+buttonContainer.Size = UDim2.new(1, -80, 0, 55)
+buttonContainer.Position = UDim2.fromOffset(40, 65)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.BorderSizePixel = 0
+buttonContainer.ZIndex = 3
+buttonContainer.Parent = frame
+
+local buttonGlow = Instance.new("Frame")
+buttonGlow.Name = "ButtonGlow"
+buttonGlow.Size = UDim2.new(1, 8, 1, 8)
+buttonGlow.Position = UDim2.fromOffset(-4, -4)
+buttonGlow.BackgroundColor3 = Color3.fromRGB(235, 235, 245)
+buttonGlow.BackgroundTransparency = 0.82
+buttonGlow.BorderSizePixel = 0
+buttonGlow.ZIndex = 3
+buttonGlow.Parent = buttonContainer
+
+local buttonGlowCorner = Instance.new("UICorner")
+buttonGlowCorner.CornerRadius = UDim.new(0, 15)
+buttonGlowCorner.Parent = buttonGlow
+
+local button = Instance.new("TextButton")
+button.Name = "InstaResetButton"
+button.Size = UDim2.new(1, 0, 1, 0)
+button.BackgroundColor3 = Color3.fromRGB(225, 225, 230)
+button.BorderSizePixel = 0
+button.AutoButtonColor = false
+button.Text = "INSTA RESET"
+button.TextColor3 = Color3.fromRGB(12, 12, 15)
+button.Font = Enum.Font.GothamBlack
+button.TextSize = 15
+button.ZIndex = 4
+button.Parent = buttonContainer
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 11)
+buttonCorner.Parent = button
+
+local buttonGradient = Instance.new("UIGradient")
+buttonGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+	ColorSequenceKeypoint.new(0.25, Color3.fromRGB(238, 238, 242)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(205, 205, 212)),
+	ColorSequenceKeypoint.new(0.75, Color3.fromRGB(238, 238, 242)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+})
+buttonGradient.Rotation = 90
+buttonGradient.Parent = button
+
+local buttonStroke = Instance.new("UIStroke")
+buttonStroke.Color = Color3.fromRGB(255, 255, 255)
+buttonStroke.Thickness = 1.5
+buttonStroke.Parent = button
+
+--==================================================
+-- BIGGER SIZE SLIDER
+--==================================================
+
+local sizeLabel = Instance.new("TextLabel")
+sizeLabel.Name = "SizeLabel"
+sizeLabel.Size = UDim2.new(1, -40, 0, 18)
+sizeLabel.Position = UDim2.fromOffset(20, 126)
+sizeLabel.BackgroundTransparency = 1
+sizeLabel.Text = "GUI SIZE 100%"
+sizeLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
+sizeLabel.Font = Enum.Font.GothamMedium
+sizeLabel.TextSize = 10
+sizeLabel.TextXAlignment = Enum.TextXAlignment.Left
+sizeLabel.ZIndex = 4
+sizeLabel.Parent = frame
+
+local sizeBar = Instance.new("Frame")
+sizeBar.Name = "SizeBar"
+sizeBar.Size = UDim2.new(1, -40, 0, 9)
+sizeBar.Position = UDim2.fromOffset(20, 149)
+sizeBar.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+sizeBar.BorderSizePixel = 0
+sizeBar.ZIndex = 4
+sizeBar.Parent = frame
+
+local sizeBarCorner = Instance.new("UICorner")
+sizeBarCorner.CornerRadius = UDim.new(1, 0)
+sizeBarCorner.Parent = sizeBar
+
+local sizeFill = Instance.new("Frame")
+sizeFill.Name = "Fill"
+sizeFill.Size = UDim2.new(0.5, 0, 1, 0)
+sizeFill.BackgroundColor3 = Color3.fromRGB(225, 225, 235)
+sizeFill.BorderSizePixel = 0
+sizeFill.ZIndex = 5
+sizeFill.Parent = sizeBar
+
+local sizeFillCorner = Instance.new("UICorner")
+sizeFillCorner.CornerRadius = UDim.new(1, 0)
+sizeFillCorner.Parent = sizeFill
+
+local sizeKnob = Instance.new("TextButton")
+sizeKnob.Name = "SizeKnob"
+sizeKnob.Size = UDim2.fromOffset(18, 18)
+sizeKnob.Position = UDim2.new(0.5, -9, 0.5, -9)
+sizeKnob.BackgroundColor3 = Color3.fromRGB(250, 250, 255)
+sizeKnob.Text = ""
+sizeKnob.BorderSizePixel = 0
+sizeKnob.AutoButtonColor = false
+sizeKnob.ZIndex = 6
+sizeKnob.Parent = sizeBar
+
+local knobCorner = Instance.new("UICorner")
+knobCorner.CornerRadius = UDim.new(1, 0)
+knobCorner.Parent = sizeKnob
+
+local knobStroke = Instance.new("UIStroke")
+knobStroke.Color = Color3.fromRGB(120, 120, 130)
+knobStroke.Thickness = 1.2
+knobStroke.Parent = sizeKnob
+
+--==================================================
+-- STATUS
+--==================================================
+
+local status = Instance.new("TextLabel")
+status.Name = "Status"
+status.Size = UDim2.new(1, -40, 0, 18)
+status.Position = UDim2.fromOffset(20, 164)
+status.BackgroundTransparency = 1
+status.Text = "● READY"
+status.TextColor3 = Color3.fromRGB(155, 155, 165)
+status.Font = Enum.Font.GothamMedium
+status.TextSize = 10
+status.TextXAlignment = Enum.TextXAlignment.Left
+status.ZIndex = 3
+status.Parent = frame
+
+--==================================================
+-- GUI SCALE
+--==================================================
+
+local uiScale = Instance.new("UIScale")
+uiScale.Name = "GuiScale"
+uiScale.Scale = guiScaleValue
+uiScale.Parent = frame
+
+local function setGuiScale(scale)
+
+	guiScaleValue = math.clamp(
+		scale,
+		MIN_SCALE,
+		MAX_SCALE
+	)
+
+	TweenService:Create(
+		uiScale,
+		TweenInfo.new(
+			0.12,
+			Enum.EasingStyle.Quad,
+			Enum.EasingDirection.Out
+		),
+		{
+			Scale = guiScaleValue
+		}
+	):Play()
+
+	local percent =
+		math.floor(guiScaleValue * 100 + 0.5)
+
+	sizeLabel.Text =
+		"GUI SIZE  " .. percent .. "%"
+
+	local alpha =
+		(guiScaleValue - MIN_SCALE)
+		/ (MAX_SCALE - MIN_SCALE)
+
+	sizeFill.Size =
+		UDim2.new(alpha, 0, 1, 0)
+
+	sizeKnob.Position =
+		UDim2.new(alpha, -9, 0.5, -9)
+end
+
+local resizing = false
+
+local function updateSizeFromX(x)
+
+	local left =
+		sizeBar.AbsolutePosition.X
+
+	local width =
+		sizeBar.AbsoluteSize.X
+
+	if width <= 0 then
+		return
+	end
+
+	local alpha =
+		math.clamp(
+			(x - left) / width,
+			0,
+			1
+		)
+
+	local scale =
+		MIN_SCALE
+		+ (MAX_SCALE - MIN_SCALE) * alpha
+
+	setGuiScale(scale)
+end
+
+sizeKnob.InputBegan:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+		or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		resizing = true
+	end
+end)
+
+sizeBar.InputBegan:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+		or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		resizing = true
+
+		updateSizeFromX(
+			input.Position.X
+		)
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+	if not resizing then
+		return
+	end
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseMovement
+		or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		updateSizeFromX(
+			input.Position.X
+		)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+		or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		resizing = false
+	end
+end)
+
+setGuiScale(1)
+
+--==================================================
+-- DRAG SYSTEM
+--==================================================
+
+local dragging = false
+local dragStart
+local startPosition
+
+local function updateDrag(input)
+
+	local delta =
+		input.Position - dragStart
+
+	frame.Position = UDim2.new(
+		startPosition.X.Scale,
+		startPosition.X.Offset + delta.X,
+		startPosition.Y.Scale,
+		startPosition.Y.Offset + delta.Y
+	)
+end
+
+frame.InputBegan:Connect(function(input)
+
+	if guiLocked then
+		return
+	end
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+		or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		dragging = true
+		dragStart = input.Position
+		startPosition = frame.Position
+
+		input.Changed:Connect(function()
+
+			if input.UserInputState ==
+				Enum.UserInputState.End then
+
+				dragging = false
+			end
+		end)
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+	if guiLocked then
+		return
+	end
+
+	if not dragging then
+		return
+	end
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseMovement
+		or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		updateDrag(input)
+	end
+end)
+
+--==================================================
+-- LOCK / UNLOCK
+--==================================================
+
+lockButton.MouseButton1Click:Connect(function()
+
+	guiLocked = not guiLocked
+
+	if guiLocked then
+
+		lockButton.Text = "🔒"
+
+		lockButton.BackgroundColor3 =
+			Color3.fromRGB(55, 55, 62)
+
+		status.Text =
+			"● GUI LOCKED"
+
+		status.TextColor3 =
+			Color3.fromRGB(185, 185, 195)
+
+	else
+
+		lockButton.Text = "🔓"
+
+		lockButton.BackgroundColor3 =
+			Color3.fromRGB(35, 35, 42)
+
+		status.Text =
+			"● READY"
+
+		status.TextColor3 =
+			Color3.fromRGB(155, 155, 165)
+	end
+end)
+
+--==================================================
+-- CLOSE
+--==================================================
+
+closeButton.MouseEnter:Connect(function()
+
+	TweenService:Create(
+		closeButton,
+		TweenInfo.new(0.12),
+		{
+			BackgroundColor3 =
+				Color3.fromRGB(235, 55, 55)
+		}
+	):Play()
+end)
+
+closeButton.MouseLeave:Connect(function()
+
+	TweenService:Create(
+		closeButton,
+		TweenInfo.new(0.12),
+		{
+			BackgroundColor3 =
+				Color3.fromRGB(190, 45, 45)
+		}
+	):Play()
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+
+	TweenService:Create(
+		frame,
+		TweenInfo.new(
+			0.2,
+			Enum.EasingStyle.Quad,
+			Enum.EasingDirection.In
+		),
+		{
+			Size = UDim2.fromOffset(0, 0)
+		}
+	):Play()
+
+	task.wait(0.2)
+
+	screenGui:Destroy()
+end)
+
+--==================================================
+-- RESET BUTTON
+--==================================================
+
+local normalButtonColor =
+	Color3.fromRGB(225, 225, 230)
+
+local hoverButtonColor =
+	Color3.fromRGB(250, 250, 255)
+
+local pressedButtonColor =
+	Color3.fromRGB(195, 195, 202)
+
+button.MouseEnter:Connect(function()
+
+	TweenService:Create(
+		button,
+		TweenInfo.new(0.15),
+		{
+			BackgroundColor3 =
+				hoverButtonColor
+		}
+	):Play()
+
+	TweenService:Create(
+		buttonGlow,
+		TweenInfo.new(0.15),
+		{
+			BackgroundTransparency = 0.62
+		}
+	):Play()
+end)
+
+button.MouseLeave:Connect(function()
+
+	TweenService:Create(
+		button,
+		TweenInfo.new(0.15),
+		{
+			BackgroundColor3 =
+				normalButtonColor
+		}
+	):Play()
+
+	TweenService:Create(
+		buttonGlow,
+		TweenInfo.new(0.15),
+		{
+			BackgroundTransparency = 0.82
+		}
+	):Play()
+end)
+
+button.MouseButton1Down:Connect(function()
+
+	TweenService:Create(
+		button,
+		TweenInfo.new(0.08),
+		{
+			BackgroundColor3 =
+				pressedButtonColor
+		}
+	):Play()
+end)
+
+button.MouseButton1Up:Connect(function()
+
+	TweenService:Create(
+		button,
+		TweenInfo.new(0.08),
+		{
+			BackgroundColor3 =
+				normalButtonColor
+		}
+	):Play()
+end)
+
+--==================================================
+-- FRAME GLOW
+--==================================================
+
+task.spawn(function()
+
+	while frame.Parent do
+
+		TweenService:Create(
+			outerGlow,
+			TweenInfo.new(
+				1.5,
+				Enum.EasingStyle.Sine,
+				Enum.EasingDirection.InOut
+			),
+			{
+				Transparency = 0.90,
+				Thickness = 5
+			}
+		):Play()
+
+		task.wait(1.5)
+
+		TweenService:Create(
+			outerGlow,
+			TweenInfo.new(
+				1.5,
+				Enum.EasingStyle.Sine,
+				Enum.EasingDirection.InOut
+			),
+			{
+				Transparency = 0.76,
+				Thickness = 8
+			}
+		):Play()
+
+		task.wait(1.5)
+	end
+end)
+
+--==================================================
+-- RESET LOGIC
+--==================================================
+
+button.MouseButton1Click:Connect(function()
+
+	local character =
+		player.Character
+
+	if not character then
+
+		status.Text =
+			"● NO CHARACTER"
+
+		status.TextColor3 =
+			Color3.fromRGB(225, 95, 95)
+
+		return
+	end
+
+	local hrp =
+		character:FindFirstChild(
+			"HumanoidRootPart"
+		)
+
+	if not hrp then
+
+		status.Text =
+			"● NO ROOT PART"
+
+		status.TextColor3 =
+			Color3.fromRGB(225, 95, 95)
+
+		return
+	end
+
+	status.Text =
+		"● RESETTING..."
+
+	status.TextColor3 =
+		Color3.fromRGB(210, 210, 220)
+
+	local originalCFrame =
+		hrp.CFrame
+
+	hrp.CFrame =
+		originalCFrame
+		+ Vector3.new(0, 1000000, 0)
+
+	task.wait(0.1)
+
+	if hrp and hrp.Parent then
+		hrp.CFrame =
+			originalCFrame
+	end
+
+	status.Text =
+		"● RESET COMPLETE"
+
+	status.TextColor3 =
+		Color3.fromRGB(200, 200, 210)
+
+	task.wait(1)
+
+	status.Text =
+		"● READY"
+
+	status.TextColor3 =
+		Color3.fromRGB(155, 155, 165)
+end)
